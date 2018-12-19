@@ -262,9 +262,19 @@ def txmake(is_udim, asset_path, fpath_list):
     asset_file_ref = FilePath(dirname).join(fname + '.tex')
     if is_udim:
         asset_file_ref = re.sub(r'1\d{3}', '_MAPID_', asset_file_ref)
-    return asset_file_ref
+    return fname + '.tex'
 
+def addDependency(asset, fpath):
+    asset._assetData['dependencies'].append(fpath)
+    print(asset._assetData['dependencies'])
 
+def deleteInappropriateChannels(chans):
+    keys = chans.keys()
+    for key in keys:
+        if(key != 'basecolor' and key != 'normal' and key != 'metallic' and key != 'roughness'):
+            del chans[key]
+
+    
 def export():
     """Export a RenderManAsset package based on  a json file.
     """
@@ -314,6 +324,8 @@ def export():
         if not is_udim:
             label = '%s_%s' % (scene, mat['textureSet'])
         chans = mat['channels']
+        deleteInappropriateChannels(chans)
+        print(type(chans))
         DBUG('+ Exporting %s', label)
 
         assetPath = exportPath.join(label + '.rma')
@@ -339,6 +351,8 @@ def export():
             XCPT('Asset creation failed')
             sys.exit(0)
 
+        # asset.['dependencies'].append('asd')
+        
         # create standard metadata
         #
         set_metadata(asset, mat)
@@ -398,6 +412,10 @@ def export():
             DBUG('    |_ %s' % nodeName)
             chanNodes[chan] = nodeName
             fpath = txmake(is_udim, assetPath, fpath_list)
+            
+            # adding dependency            
+            addDependency(asset, fpath)
+            
             if chan == 'normal':
                 add_texture_node(asset, nodeName, 'PxrNormalMap', fpath)
             elif chan == 'height':

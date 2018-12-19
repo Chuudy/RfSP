@@ -210,7 +210,7 @@ function exportAssets(bxdf) {
     //
     if (obj != null)
     {
-        alg.log.info("RenderMan: Writing " + jsonFilePath + "...")
+        alg.log.info("RenderMan: Writingggg " + jsonFilePath + "...")
 
         // write json file needed by the python script
         //
@@ -227,6 +227,7 @@ function exportAssets(bxdf) {
         {
             var fpath = "\"" + jsonFilePath + "\""
             var result = alg.subprocess.check_output([pyBin, script, fpath])
+			alg.log.info(result)
             var lines = result.split(/[\r\n]+/g)
             for (var i in lines)
             {
